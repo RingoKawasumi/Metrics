@@ -1,22 +1,28 @@
 package com.zhujie.study.GettingStarted;
 
 import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by zhujie on 16/5/6.
+ * Created by zhujie on 16/5/9.
  */
-public class GetStarted {
-    static final MetricRegistry metrics = new MetricRegistry();
+public class TimerSample {
+    private static final MetricRegistry metrics = new MetricRegistry();
+
+    private static final Timer responses = metrics.timer(MetricRegistry.name(TimerSample.class, "responses"));
 
     public static void main(String[] args) {
         startReport();
-        Meter requests = metrics.meter("requests");
-        requests.mark();
-        wait5Seconds();
+        Timer.Context context = responses.time();
+        try {
+            System.out.println("ok");
+            waitSeconds();
+        } finally {
+            context.stop();
+        }
     }
 
     static void startReport() {
@@ -25,9 +31,9 @@ public class GetStarted {
         reporter.start(1, TimeUnit.SECONDS);
     }
 
-    static void wait5Seconds() {
+    static void waitSeconds() {
         try {
-            Thread.sleep(5 * 1000);
+            Thread.sleep(2 * 1000);
         } catch (InterruptedException e) {
 
         }
